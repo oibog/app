@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Danh sách App</title>
+
+<style>
+  :root{
+    --accent:#00ffc3;
+    --text:#e8f2f2;
+    --muted:#9aa6b2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background: url('https://sf-static.upanhlaylink.com/img/image_20251120262d0b5467d05207177d3d49ea82c171.jpg') no-repeat center center/cover;
+    font-family:Inter, Arial, sans-serif;
+    color:var(--text);
+    padding:20px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* Tiêu đề đổi 7 màu chậm */
+  h1{
+    text-align:center;
+    margin-bottom:20px;
+    font-size:22px;
+    font-weight:bold;
+    background: linear-gradient(270deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8B00FF);
+    background-size: 1400% 1400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 15s ease infinite;
+  }
+
+  @keyframes rainbow{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:16px;
+    flex:1;
+  }
+
+  .card{
+    background: rgba(17,26,35,0.85);
+    border:2px solid rgba(255,255,255,0.05);
+    padding:16px;
+    border-radius:12px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+    opacity:0;
+    transform: translateY(20px);
+    transition: all .4s ease;
+    backdrop-filter: blur(6px);
+  }
+
+  .card.visible{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  .card:hover, .card.active{
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,255,0,0.4);
+    border-color: #00ff00;
+  }
+
+  .icon img{
+    width:68px;
+    height:68px;
+    border-radius:14px;
+    object-fit:cover;
+  }
+
+  .meta h3{
+    margin:0 0 4px;
+    font-size:17px;
+  }
+  .meta p{
+    margin:0;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  .btn{
+    margin-left:auto;
+    background:var(--accent);
+    color:#00332b;
+    padding:8px 14px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:600;
+    font-size:14px;
+    box-shadow:0 5px 12px rgba(0,255,200,0.3);
+  }
+
+  audio{display:none;}
+
+  /* Footer */
+  footer{
+    text-align:center;
+    margin-top:20px;
+    font-size:14px;
+    color:var(--muted);
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Danh sách các ứng dụng</h1>
+
+<div class="grid" id="grid"></div>
+
+<audio id="bgMusic" src="https://files.catbox.moe/m9zgnj.mp3" loop></audio>
+
+<script>
+  const apps = [
+    {name:"AOV HACK V1", desc:"BY PHONG LỎ", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/KorQAP"},
+    {name:"App 2", desc:"Mô tả app 2", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app2"},
+    {name:"App 3", desc:"Mô tả app 3", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app3"},
+    {name:"App 4", desc:"Mô tả app 4", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app4"},
+    {name:"App 5", desc:"Mô tả app 5", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app5"},
+    {name:"App 6", desc:"Mô tả app 6", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app6"},
+    {name:"App 7", desc:"Mô tả app 7", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app7"},
+    {name:"App 8", desc:"Mô tả app 8", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app8"},
+    {name:"App 9", desc:"Mô tả app 9", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app9"},
+    {name:"App 10", desc:"Mô tả app 10", img:"https://sf-static.upanhlaylink.com/img/image_20251120048774b7d532a663552c5b0caa19d692.jpg", link:"https://link4m.com/app10"},
+  ];
+
+  const grid = document.getElementById("grid");
+
+  apps.forEach(a=>{
+    let card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="icon"><img src="${a.img}" alt="${a.name}"></div>
+      <div class="meta">
+        <h3>${a.name}</h3>
+        <p>${a.desc}</p>
+      </div>
+      <a class="btn" href="${a.link}" target="_blank">Tải xuống</a>
+    `;
+    grid.appendChild(card);
+
+    // Click để nổi + viền xanh
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+    });
+  });
+
+  // Fade-in khi cuộn
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add("visible");
+      }
+    });
+  },{threshold:0.15});
+  document.querySelectorAll(".card").forEach(el=>observer.observe(el));
+
+  // Nhạc bật khi tap/click
+  const bgMusic = document.getElementById('bgMusic');
+  let musicStarted = false;
+  document.body.addEventListener('click', ()=>{
+    if(!musicStarted){
+      bgMusic.play();
+      musicStarted = true;
+    }
+  }, {once:true});
+</script>
+
+<footer>@2025 - DARKTEAM</footer>
+
+</body>
+</html>
